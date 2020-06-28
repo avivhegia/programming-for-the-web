@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+
+
+<head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+   
+
+        let kit_price=0;
+    $(document).ready(function() {
+        $('#calculate').click(calculate);
+
+       function calculate(){   
+
+       let area=parseInt($('#length').val());
+       let depth=parseInt($('#depth').val());
+       if (area>20) {$('#length_err').text("המחשבון אינו מיועד למערכות בגודל כזה \n")}
+       else {$('#length_err').text("")}
+       if (depth>100) {$('#width_err').append('\n אין צורך בכזה עומק')}
+       else if (depth<10) {$('#width_err').append('\n העומק רדוד מדי, עומק מומלץ 30 ס"מ')}
+       else{$('#width_err').text("")}
+
+       let volume=Math.round(area*(depth/100)*1000)
+              
+        $('#BOM').text('');
+        let BOM=`
+        <p>נפח אמבט הגידול: ${volume} ליטר</p>
+        <p> נפח מינימלי למיכל סאמפ ${volume/3} ליטר</p>
+        <p>ספיקת מים רצויה: ${volume/3} ליטר/שעה</p>
+        `
+        $('#BOM').prepend(BOM)
+
+        if (isNaN(length)==true||isNaN(height)==true ||isNaN(width)==true){
+            $("#material-item-list").empty()
+            $('#price').text('נא להזין נתונים')
+        }else{
+            $('#thulat_hakit').text('תכולת הקיט:')
+        }
+    }
+    });
+    </script>
+</head>
+
+<body>
+<form class =  "calculator-form-div">
+    שטח אמבט הגידול <br/>
+        <div class = "calculatoe-error-message" id = "length_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "area" placeholder= "במטרים רבועים"><br/>
+     עומק אמבט הגידול (מומלץ 30 ס"מ)<br/>
+        <div class = "calculatoe-error-message" id = "width_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "depth" placeholder= "בסנטימטרים"><br/><br/>
+            <div id = "BOM"></div> <br/>
+
+</form>
+</body>

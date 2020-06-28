@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+
+<head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+
+    $(document).ready(function() {
+        $('#calculate').click(calculate);
+
+       function calculate(){   
+
+       let komot=parseInt($('#komot').val());
+       let length=parseInt($('#length').val());
+       let kit_price=0;
+       let pipe_length=length-46;
+       let no_of_plants=Math.floor(komot*pipe_length/20);
+
+       $('#length_err').text("")
+       $('#komot_err').text("")
+       if (pipe_length>240) {$('#length_err').append("המערכת ארוכה מדי")}
+       if (no_of_plants>51) {$('#length_err').after("יש יותר מדי צמחים ביחס לגודל מאגר המים. נסו להנמיך או לקצר את המערכת")}
+       if (komot>6) {$('#komot_err').append("המערכת גבוהה מדי")}
+
+       let total_height=komot*22+45    
+    
+       console.log(total_height)
+
+        add_material('div-id',length+2);
+        add_material('screw-for-dibel',komot*5)
+        add_material('block-wall-dibel-8mm',komot*5)
+        add_material('20mm-tooth-tap',1)
+        add_material('20mm-90-degrees-teeth-connector',2)
+        add_material('23mm-transparent-pipe',1)
+        if (komot*pipe_length<520){
+            add_material('103-water-pump-1200lh',1)  
+        } else {
+            add_material('104-water-pump-2000lh',1)
+        }
+        add_material('upvc-pipe-end-cap-110mm-diameter',1)
+        if (pipe_length<=130){
+            add_material('white-upvc-pipe-110-mm-diameter-1-3m-length-with-6-holes',komot)
+        } else{
+            add_material('white-upvc-pipe-110mm-diameter-2-4m-length-with-11-holes',komot)
+        }
+        add_material('110mm-o-ring',komot*3)
+        add_material('90-degree-angle-110mm-pipe',komot*2)
+        if ($('#plastic_gripper').is(':checked')) {
+            add_material('plastic-hook-for-110mm-pipe',komot*2)
+        }else {
+            add_material('omega-hook-for-110mm-pipe',komot*2)
+        }
+        add_material('large-planting-cone',no_of_plants+komot)
+        add_material('hdpe-water-pipe-20mm',Math.round((total_height+100)/100))
+        add_material('60-litre-reservoir-with-vertical-auto-refill-float',1)
+
+        $('#price').text(Math.round(price*100)/100);
+        $('#BOM').text(
+        `
+        * אורך הצינורות לחיתוך: ${pipe_length}
+        * מס' הצמחים: ${no_of_plants}
+        * גובה מומלץ ${total_height} - כתלות בשיפוע הצינורות
+        * רוחב המערכת: 47 ס"מ
+        * אורך המערכת: ${length}
+        `
+        );
+        
+    }
+
+    function add_material(id,quantity){
+        let material={
+        img_src: $('#'+id).children().filter('#img_src').attr('src'),
+        name: $('#'+id).children().filter('#name').text(),
+        description: $('#'+id).children().filter('#description').text(),
+        price: $('#'+id).children().filter('#price').text(),
+        units: $('#'+id).children().filter('#units').text()
+        };
+
+        let total_price=material.price*quantity
+
+        let row=`
+        <li id="material-item-${id}" class="material-item Collection-Item-3">
+            <img src="${material.img_src}",class="material-thumbnail-2" alt="${material.name}"/>
+            <div class='material-text-div', visibility="hidden">
+                <div class="list-item-price-div"
+                    <p id="quantity", class="material-amount">${quantity}</p>
+                    <p class="material-amount"> </p>
+                    <p id="material-units", class="material-amount">${material.units}</p>
+                    <p class="material-amount">,</p>
+                    <p id="material-total-price", class="material-total-price">${total_price}</p>
+                    <p class="material-total-price">₪</p>
+                </div>
+                <div class="list-item-price-div">
+                    <p id="material-price", class="material-price">${material.price}</p>
+                    <p class="material-price">₪ ל</p>
+                    <p class="material-price">${material.units}</p>
+                </div>
+                <p class="material-description-2", id="material-description">${material.description}</p>
+                <p class="material-name", id="material-name">${material.name}</p>
+            </div>        
+            <div>
+                
+            </div>
+        </li>        
+         `
+         $("#body").prepend(row)
+         $(`#material-item-${id}`).hide().slideDown('fast')
+         kit_price=kit_price+total_price
+    }
+    });
+
+    </script>
+</head>
+
+<body>
+    <form class =  "calculator-form-div">
+        מס' הקומות <br/>
+            <div class = "calculatoe-error-message" id = "komot_err"></div>
+            <input class = "calculator-text-input" type = "text" id = "komot" placeholder= "מס' צינורות הגידול"><br/>
+        אורך חיצוני <br/>
+            <div class = "calculatoe-error-message" id = "length_err"></div>
+            <input class = "calculator-text-input" type = "text" id = "length" placeholder= "בסנטימטרים"><br/>
+
+        תפסני פלסטיק
+        <input type = "radio" id = "plastic_gripper" name="yesno"/><br/>
+        אומגות מתכת
+        <input type = "radio" id = "omega" name="yesno"/>
+
+        <button class = "calculate" type = "button" onclick="calculate()">חשב</button> <br/>
+        מחיר:
+          <h3 class = "1.1-like-heading" id = "price"></h3><br/>
+          <div id = "BOM"></div> <br/>
+    </form>
+
+    <p>sdfgsdfg11111</p>
+<!--
+    <ul>
+        <li id="material-item-list-to-take-from">
+            <div id=div-id>
+                <p id="name">material-name</p>
+                <p id="description">material-description</p>
+                <p id="price">3</p>
+                <p id="quantity">quantity</p>
+                <p id="units">material-units</p>
+                <p id="material-total-price">material-total-price</p>          
+                <img id='img_src', src="https://image.flaticon.com/icons/png/512/3/3901.png"/>
+            </div>        
+        </li>
+      </ul>
+    -->
+</body>

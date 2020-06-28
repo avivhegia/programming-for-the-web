@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+      
+
+        function calc(){
+          let total_length = parseInt(document.querySelector("#total_length").value); //בודק את המשתנים שהוזנו בטופס
+          let total_width = parseInt(document.querySelector("#total_width").value);
+          let pipe_length = parseInt(document.querySelector("#pipe_length").value);
+          let pipe_price=0;
+          let inner_width=0;
+          let inner_length=0;
+          let tarp_length=0;
+          let tarp_width=0;
+          let volume=0;
+          let no_of_plants=0;
+          let no_of_sacks=0;
+          let pump_size=0;
+          let pump_price=0;  
+          let price=0;
+          let rafts=0;
+
+            hydro_or_not()
+
+            if (total_width > 170){ 
+                document.querySelector("#width_over_170").innerHTML = 'רוחב מקסימלי 170 ס"מ\n';
+            }
+            else{
+                document.querySelector("#width_over_170").innerHTML = '';
+            }
+
+            if (total_width > total_length){ 
+                document.querySelector("#width_over_length").innerHTML = "הרוחב חייב להיות קטן מהאורך\n";
+            }
+            else{
+                document.querySelector("#width_over_length").innerHTML = "";
+            }
+
+            pipe_price=2*pipe_length;
+            inner_width=total_width-5*2;
+            inner_length=total_length-5*2;
+
+            tarp_length=inner_length+28+28+20;
+            tarp_width=inner_width+28+28+20;
+
+            volume=(inner_length/100)*(inner_width/100)*0.25*1000
+
+            no_of_plants = Math.round(inner_width*inner_length/400);
+
+            if (volume<5){
+                pump_size='המערכת קטנה מדי'
+            }
+            else if (volume<150) {
+                pump_size = "יציאה אחת - 240 ליטר/שעה";
+                pump_price=33+1*4+2*2+1.2;//+airstones+6mm pipe+מחבר שן תחילית נעץ
+            }
+            else if (volume<300) {
+                pump_size = "2 יציאות - 420 ליטר/שעה"
+                pump_price=73+2*4+2*2*2+2*1.2;//+airstones+6mm pipe+מחבר שן תחילית נעץ
+            }
+            else if (volume>=300) {
+                pump_size = "HP-4000 )2,160 ליטר/שעה)"
+                pump_price=387+6*4+2*2*6+6*1.2;//+airstones+6mm pipe+מחבר שן תחילית נעץ
+            }
+            else{
+                pump_size = "שגיאה"
+                pump_price=null
+            }
+
+            no_of_sacks=Math.ceil(volume/50)
+
+            rafts=Math.ceil((inner_length*inner_width)/6400);
+
+            if (isNaN(inner_width)==true){
+                inner_width="0";
+                }
+            if (isNaN(inner_length)==true){
+                inner_length="0";
+                }
+            if (isNaN(tarp_width)==true){
+                tarp_width="0";
+                }
+            if (isNaN(tarp_length)==true){
+                tarp_length="0";
+                }
+            if (isNaN(volume)==true){
+                volume="0";
+                }
+            if (isNaN(no_of_plants)==true){
+                no_of_plants="0";
+                }
+            if (isNaN(rafts)==true){
+                rafts="0";
+                }
+            if (isNaN(no_of_sacks)==true){
+                no_of_sacks="0";
+                }
+            
+            document.querySelector("#inner_width").innerHTML = inner_width+' ס"מ ';
+            document.querySelector("#inner_length").innerHTML = inner_length+' ס"מ ';
+            document.querySelector("#tarp").innerHTML = tarp_width+"X"+tarp_length+' ס"מ';
+            document.querySelector("#volume").innerHTML = Math.round(volume)+' ליטר';
+            document.querySelector("#no_of_plants").innerHTML =Math.round(no_of_plants)+' צמחים ';
+            document.querySelector("#rafts").innerHTML =Math.round(rafts)+' רפסודות ';
+            
+            price=inner_length*4*15/100+(6+inner_width)*4*15/100;//wood price
+            price = price+tarp_width*tarp_length*19/10000//tarp price
+
+            if (document.getElementById('yes_hydro').checked) {
+                price=price+223//base price for hydro
+                price=price+pump_price+no_of_plants*1+rafts*27+pipe_price;//+pump price,net cups price,rafts price,air pipe price
+                document.querySelector("#pump_size").innerHTML = pump_size;
+            }
+            else{
+                price=price+161//base price for non hydro
+                price=price+no_of_sacks*40;//soil price
+                document.querySelector("#soil_sack").innerHTML = no_of_sacks+' שקים של 50 ליטר ';
+            }
+            price=Math.round(price)
+            if (isNaN(price)==true||inner_length==0||inner_length==0){
+                price="0";
+                }
+            document.querySelector("#price").innerHTML = price+' ש"ח';
+    }
+
+function hydro_or_not(){
+            if (document.getElementById('yes_hydro').checked) {
+            document.getElementById('pump_size_row').style.display = '';
+            document.getElementById('pump_size').style.display = '';
+            document.getElementById('rafts_row').style.display = ''; 
+            document.getElementById('rafts').style.display = ''; 
+            document.getElementById('soil_sack_row').style.display = 'none';
+            document.getElementById('soil_sack').style.display = 'none';
+            }
+            else{
+            document.getElementById('pump_size_row').style.display = 'none';
+            document.getElementById('pump_size').style.display = 'none';
+            document.getElementById('rafts_row').style.display = 'none'; 
+            document.getElementById('rafts').style.display = 'none'; 
+            document.getElementById('soil_sack_row').style.display = '';
+            document.getElementById('soil_sack').style.display = '';
+            }
+        }
+    </script>
+
+</head>
+
+<body>
+
+    <form class =  "calculator-form-div">
+         אורך חיצוני <br/>
+            <input class = "calculator-text-input" type = "text" id = "total_length" placeholder= "בסנטימטרים"><br/>
+         רוחב חיצוני <br/>
+            <div class = "calculatoe-error-message" id = "width_over_170"></div>
+            <div class = "calculatoe-error-message" id = "width_over_length"></div>
+            <input class = "calculator-text-input" type = "text" id = "total_width" placeholder= "בסנטימטרים"><br/>
+        אורך צינור אוויר (מרחק מנק' החשמל)
+            <input class = "calculator-text-input" type = "text" id = "pipe_length" placeholder= "במטרים"><br/>
+        שימוש כמערכת הידרופונית
+            <input type = "radio" name="yesno" id = "yes_hydro" value="" checked/><br/>
+        שימוש כאדנית עם אדמת עציצים
+            <input type = "radio" name="yesno" id = "yes_soil_planter"/> <br/>      
+          <button class = "calculator-calculate-button" type = "button" onclick = "calc()">חשב מחיר</button> <br/>
+          מחיר:
+          <h3 class = "1.1-like-heading" id = "price"></h3><br/>
+          <div class="ronit-result-div">
+          <table class = "calculator-result" style="width:100%" border = "1px solid black" border-collapse = "collapse">
+            <tr>
+              <th> פרמטר </th>
+              <th> ערך </th>
+            </tr>
+
+            <tr>
+                <td>אורך פנימי</td>
+                <td id = "inner_length"></td>
+            </tr>
+
+            <tr>
+              <td>רוחב פנימי</td>
+              <td id = "inner_width"></td>
+            </tr>
+                          
+            <tr>
+                <td>מידות יריעת PVC</td>
+                <td id = "tarp"></td>
+            </tr>
+            
+            <tr>
+                <td>נפח</td>
+                <td id = "volume"></td>
+            </tr>
+            
+            <tr>
+                <td>כמות צמחים</td>
+                <td id = "no_of_plants"></td>
+            </tr>
+            
+            <tr id="pump_size_row" display="">
+                <td id="pump_size_row" display="">משאבת אוויר דרושה</td>
+                <td id = "pump_size"></td>
+            </tr>
+
+            <tr id="rafts_row" display="">
+                <td id="rafts_row" display="">רפסודת קלקר 50 על 128 ס"מ</td>
+                <td id = "rafts"></td>
+            </tr>
+
+            <tr id="soil_sack_row" display="">
+                <td id="soil_sack_row" display=""> שקי אדמה</td>
+                <td id = "soil_sack"></td>
+            </tr>
+          </table>
+          </div>
+    </form>
+</body>
+</html>

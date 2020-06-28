@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function calc(){
+          let wv = parseInt(document.querySelector("#water_volume").value); //בודק את המשתנים שהוזנו בטופס
+          let ac = parseInt(document.querySelector("#additive_concentration").value);//ריכוז מי החמצן בבקבוק
+          let additive_quantity;
+
+            if (isNaN(ac) == true){ //בודק אם הוזן ריכוז מי חמצן בבקבוק
+                document.querySelector("#no_additive_concentration").innerHTML = "לא הוזן ריכוז מי חמצן בבקבוק";
+            } else {
+                document.querySelector("#no_additive_concentration").innerHTML = "";
+            }
+
+            ac = ac/100 //מעבר מאחוזים ליחס נומרי
+            additive_quantity = Math.round(0.00065*wv/ac);//מחשב את הכמות הממוצעת הרצויה - 0.065%
+
+if (isNaN(additive_quantity) == true) {//בודק אם יצא תוצאה הגיונית
+document.querySelector("#result").innerHTML = "לא הוכנס מספר";
+}
+else{
+document.querySelector("#result").innerHTML = Math.round((1000*0.0008*wv/ac)) + " - " + Math.round((1000*0.0005*wv/ac)) + " מיליליטר";
+}
+}
+
+    </script>
+
+</head>
+
+<body>
+
+    <form class =  "calculator-form-div">
+         נפח מאגר המים (ליטרים) <input class = "calculator-text-input" type = "text" id = "water_volume"><br/>
+         % מי החמצן בבקבוק  <input class = "calculator-text-input" type = "text" id = "additive_concentration"><br/>
+              <div class = "calculatoe-error-message" id = "no_additive_concentration"></div><br/>
+          <button class = "calculator-calculate-button" type = "button" onclick = "calc()">חשב</button> <br/>   <!--כפתור חשב-->
+          <p>הטווח המומלץ הוא:</p> <br/> <!--תוצאה-->
+          <div class = "calculator-result" id = "result"></div>         <!--תוצאה-->
+    </form>
+</body>
+</html>

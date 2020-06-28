@@ -1,0 +1,32 @@
+ <script>
+// Get parameters from url
+    var url_string = window.location.href; //לתת את שני אלה בהתחלה
+    var url = new URL(url_string);
+
+    var firstElement = url.searchParams.get("firstElement"); חיפוש בפרמטר URL, והטמעטו במשתנה. לשים בלופ כלשהו
+    var firstNumber = url.searchParams.get("firstNumber");
+    var secondElement = url.searchParams.get("secondElement");
+    var secondNumber = url.searchParams.get("secondNumber");
+    var thirdElement = url.searchParams.get("thirdElement");
+    var thirdNumber = url.searchParams.get("thirdNumber");
+
+
+    //redirect + parameters
+    $('#Image-Test-Form').submit(function() {  //מה שמפעיל את כל הסיפור. אצלו - כשעושים סבמיט. אצלי - לעשות עם כפתור באון קליק
+        $(document).ajaxSuccess(function(){ // לא מעניין
+            $('#loadingAnimation').fadeIn("slow",function(){ לא מעניי
+                $('#loadingLine').animate({width: 'hide'},7000,function(){ לא מעניין
+                    location.href = '/log-in' //אצלי /checkout
+                    + '?name=' + $('#name').val() //פרמטר ראשון עם ? . אם I=0 אז להוסיף ?
+                    + '&firstElement=' + $('#First-Element').val() פרמטרים הבאים עם &. אני צריך לעשות עם לופ
+                    + '&firstNumber=' + $('#First-Number').val()
+                    + '&secondElement=' + $('#Second-Element').val()
+                    + '&secondNumber=' + $('#Second-Number').val()
+                    + '&thirdElement=' + $('#Third-Element').val()
+                    + '&thirdNumber=' + $('#Third-Number').val();
+                  });
+              });
+        });
+    });
+
+</script>

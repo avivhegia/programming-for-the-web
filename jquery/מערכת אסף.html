@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        let kit_price=0;
+    $(document).ready(function() {
+        $('#calculate').click(calculate);
+
+       function calculate(){   
+
+       let komot=parseInt($('#komot').val());
+       let pipe_length=parseInt($('#length').val());
+       let nipple_length=0
+       if ($('#yes_nipple').is(':checked')) {nipple_length=parseInt($('#nipple_length').val())}
+       let first_hole_spacing=0
+       let hole_spacing
+       let length_to_cut
+       let no_of_holes=0
+       let total_height
+       let cutting_message
+       $('#length_err').empty();
+       if (komot>6) {$('#komot_err').text("לא מומלץ לבנות מערכת עם יותר מ 6 קומות")}
+       else {$('#komot_err').text("")}
+       if (isNaN(nipple_length)==false&&$('#yes_nipple').is(':checked')) {
+           if (nipple_length<13)  {$('#nipple_length_message').text('אורך ניפל מינימלי: 13 ס"מ')}
+           else if (nipple_length>50)  {$('#nipple_length_message').text('אורך ניפל מקסימלי: 50 ס"מ')}
+           else {$('#nipple_length_message').text('')}           
+           }
+            if (pipe_length==130){
+                length_to_cut=130
+                no_of_holes=6
+                cutting_message=""
+            }
+            else if (pipe_length==240){
+                length_to_cut=240
+                no_of_holes=11
+                cutting_message=""
+            }
+            else {        
+                if (pipe_length<130){
+                    first_hole_spacing=15.5
+                    hole_spacing=19.8
+                    }
+                else if (pipe_length>130 && pipe_length<240){
+                    first_hole_spacing=20
+                    hole_spacing=20
+                    }
+                else if (pipe_length>240){
+                    $('#length_err').append('\n אורך צינורות מקסימלי: 240 ס"מ')
+                    $("#material-item-list").empty()
+                    }
+
+                length_to_cut=first_hole_spacing+13
+                while (length_to_cut<=pipe_length) {
+                    length_to_cut += hole_spacing
+                    no_of_holes++
+                }
+                length_to_cut=Math.round(2*(length_to_cut-hole_spacing))/2
+                cutting_message='. מקוצר לאורך '+length_to_cut+' ס"מ'
+            }
+            total_height=komot*22+45+nipple_length*komot
+            no_of_holes*=komot
+            if (no_of_holes>44) {$('#length_err').text(".המערכת ארוכה מדי ביחס לגודל מאגר המים. נסו להנמיך או לקצר את המערכת \n")}
+       kit_price=0;
+
+        $('#material-item-list').empty();
+        add_material('20mm-tooth-tap',1)
+        if (komot%2==0){
+            add_material('20mm-90-degrees-teeth-connector',2)
+            add_material('hdpe-water-pipe-20mm',Math.round((total_height+100)/100))
+        }else {
+            add_material('20mm-90-degrees-teeth-connector',4)
+            add_material('hdpe-water-pipe-20mm',Math.round((length_to_cut+total_height+100)/100))
+        }
+        add_material('23mm-transparent-pipe',1)
+        if (no_of_holes<25&&total_height>120){
+            add_material('103-water-pump-1200lh',1)  
+        } else {
+            add_material('104-water-pump-2000lh',1)
+        }
+        add_material('upvc-pipe-end-cap-110mm-diameter',1)
+        if (length_to_cut<=130){
+            add_material('white-upvc-pipe-110-mm-diameter-1-3m-length-with-6-holes',komot,cutting_message,cutting_message)
+        } else{
+            add_material('white-upvc-pipe-110mm-diameter-2-4m-length-with-11-holes',komot,cutting_message,cutting_message)
+        }
+
+        if ($('#yes_nipple').is(':checked')) {
+            if (!$('#nipple_length').val()){
+                nipple_length=50
+                $('#nipple_length').text("נא להזין אורך ניפל")
+            }
+            add_material('upvc-pipe-110-dia-0-5m-length-no-holes',komot-1,'. מקוצר (במידת הצורך) לאורך '+nipple_length+' ס"מ','.  באורך '+nipple_length+' ס"מ')
+            add_material('110mm-o-ring',komot*4-1)
+        }else {add_material('110mm-o-ring',komot*3)}
+        add_material('90-degree-angle-110mm-pipe',komot*2)
+
+        if ($('#plastic_gripper').is(':checked')) {
+            add_material('plastic-hook-for-110mm-pipe',komot*2)
+            add_material('screw-for-dibel',komot*3)
+            add_material('block-wall-dibel-8mm',komot*3)
+        }else {
+            add_material('omega-hook-for-110mm-pipe',komot*2)
+            add_material('screw-for-dibel',komot*5)
+            add_material('block-wall-dibel-8mm',komot*5)
+        }
+
+        add_material('large-planting-cone',Math.ceil(no_of_holes*1.05))
+        add_material('60-litre-reservoir-with-vertical-auto-refill-float',1)
+
+        $('#price').text('');
+        kit_price=Math.round(kit_price*100)/100;
+        kit_price=Intl.NumberFormat('he-IR', { style: 'currency', currency: 'ILS' }).format(kit_price);
+        $('#price').text(kit_price);
+        $('#BOM').text('');
+        let BOM=`
+        <p> מס' הצמחים: ${no_of_holes} </p>
+        <p>גובה המערכת: ${total_height} ס"מ כתלות בשיפוע הצינורות</p>
+        <p>רוחב המערכת: 47 ס"מ</p>
+        <p>אורך הצינורות עם זוויות 90 מעלות: ${length_to_cut+30} ס"מ</p>
+        <p>אורך חיצוני כולל מאגר פלסטיק 60 ליטר: ${length_to_cut+45} ס"מ</p>
+        `
+        $('#BOM').prepend(BOM)
+
+        if (isNaN(komot)==true||isNaN(length)==true){
+            $("#material-item-list").empty()
+            $('#price').text('נא להזין נתונים')
+        }else{
+            $('#thulat_hakit').text('תכולת הקיט:')
+        }
+
+
+    }
+    });
+
+    function nipple_or_not(){
+    if ($('#yes_nipple').is(':checked')) {
+        $('#if_yes_nipple').show()
+    }
+    else {$('#if_yes_nipple').hide()}
+}
+    </script>
+</head>
+
+<body>
+<form class =  "calculator-form-div">
+    מס' הקומות <br/>
+        <div class = "calculatoe-error-message" id = "komot_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "komot" placeholder= "מס' צינורות הגידול"><br/>
+    אורך צינורות <br/>
+        <div class = "calculatoe-error-message" id = "length_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "length" placeholder= "בסנטימטרים"><br/>
+
+    תפסני פלסטיק (ראו שלב 1.3)
+    <input type = "radio" id = "plastic_gripper" name="yesno"/><br/>
+    אומגות מתכת (ראו שלב 2.3)
+    <input type = "radio" id = "omega" name="yesno" checked/><br/><br/>
+
+    עם ניפל
+        <input type = "radio" onclick = "javascript:nipple_or_not();" name = "nipple" id = "yes_nipple"/><br/>
+        <div id = "if_yes_nipple" style = "display:none">
+            מה האורך הכולל של הניפל? <br/>
+            <div class = "calculatoe-error-message" id = "nipple_length_message"></div>
+            <input class = "calculator-text-input" type = "text" id='nipple_length' placeholder= "בסנטימטרים"><br/>
+            </div>
+        בלי ניפל 
+        <input type = "radio" onclick = "javascript:nipple_or_not();" name="nipple" id = "no_nipple" checked/><br/><br/>
+    <button id='calculate' class = "calculator-calculate-button" type = "button">חשב</button> <br/>
+    מחיר הקיט:
+        <h3 class = "kit-price" id = "price"></h3><br/>
+        <div id = "BOM"></div> <br/><br/>
+    <h3 id="thulat_hakit"></h3>
+</form>
+</body>

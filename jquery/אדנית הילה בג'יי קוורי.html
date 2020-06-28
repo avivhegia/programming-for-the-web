@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+
+
+<head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        let kit_price=0;
+    $(document).ready(function() {
+        $('#calculate').click(calculate);
+
+       function calculate(){   
+
+       let length=parseInt($('#length').val());
+       let height=parseInt($('#height').val());
+       if (height>60) {$('#heigt_err').text(".האדנית גבוהה מדי ולא יציבה \n")}
+       else if (height<35){$('#heigt_err').text('.גובה מינימלי לאדנית: 35 ס"מ\n')}
+       else {$('#heigt_err').text("")}
+       if (length>200) {$('#length_err').append('\n אורך אדנית מקסימלי: 200 ס"מ')}
+       else{$('#length_err').text("")}
+       kit_price=0;
+       let volume=Math.round((length/100)*0.3*0.3*1000)
+
+        $('#material-item-list').empty();
+
+        if ($('#treated').is(':checked')) {
+            add_wood('3x15-treated-wood',6,(length-6.4)/100)
+            add_wood('3x15-treated-wood',4,(24/100))
+            add_wood('3-5x7-5-treated-wood',4,height/100)
+            add_wood('2x5-treated-wood',2,length/100)
+            add_wood('2x5-treated-wood',2,0.24)
+        }else {
+            add_wood('3x15-untreated-wood',6,(length-6.4)/100)
+            add_wood('3x15-untreated-wood',4,(24/100))
+            add_wood('3-5x7-5-untreated-wood',4,height/100)
+            add_wood('2x5-untreated-wood',2,length/100)
+            add_wood('2x5-untreated-wood',2,0.24)
+            }
+            add_material('50l-peat-potting-sack',Math.ceil(volume/50))
+            if (length<131){
+                add_material('nylon-tarp',1)    
+            }else{
+                add_material('nylon-tarp',(length+80)/100)
+            }
+            add_material('0-5l-tuf-bag-4-8mm',1,'לפיזור בתחתית האדנית')
+            add_material('4x70-wood-screw',56+2*Math.round(length/20)+10)
+            add_material('4x50-wood-screw',6+2*Math.round(length/20)+10)
+            
+        $('#price').text('');
+        kit_price=Math.round(kit_price*100)/100;
+        kit_price=Intl.NumberFormat('he-IR', { style: 'currency', currency: 'ILS' }).format(kit_price);
+        $('#price').text(kit_price);
+
+        $('#BOM').text('');
+        let BOM=`
+        <p> נפח האדנית: ${volume} ליטר</p>
+        <pרוחב האדנית: 30.5 ס"מ</p>
+        <p>אורך האדנית: ${length} ס"מ</p>
+        `
+        $('#BOM').prepend(BOM)
+
+        if (isNaN(length)==true||isNaN(height)==true){
+            $("#material-item-list").empty()
+            $('#price').text('נא להזין נתונים')
+        }else{
+            $('#thulat_hakit').text('תכולת הקיט:')
+        }
+    }
+
+    function add_material(id,quantity,appended_description){
+        if (isNaN(appended_description)==true){appended_description=''}
+        let material={
+        img_src: $('#'+id).children().filter('#img_src').text(),
+        name: $('#'+id).children().filter('#name').text(),
+        description: $('#'+id).children().filter('#description').text(),
+        price: $('#'+id).children().filter('#price').text(),
+        units: $('#'+id).children().filter('#units').text()
+        };
+        let total_price=material.price*quantity
+        total_price=total_price.toFixed(2);
+        let row=`
+        <li id="material-item-${id}", class="material-item Collection-Item-3">
+            <div class="material-thumbnail-div">
+                <img src="${material.img_src}", alt="${material.name}"/>
+            </div>
+            <div class='material-text-div', visibility="hidden">
+                <div class="list-item-price-div"
+                    <p id="quantity", class="material-amount">${quantity}</p>
+                    <p class="material-amount">&nbsp</p>
+                    <p id="material-units", class="material-amount">${material.units}</p>
+                    <p class="material-amount">,&nbsp</p>
+                    <p id="material-total-price", class="material-total-price">${total_price}</p>
+                    <p class="material-total-price">₪</p>
+                </div>
+                <div class="list-item-price-div">
+                    <p id="material-price", class="material-price">${material.price}</p>
+                    <p class="material-price">₪&nbspל</p>
+                    <p class="material-price">${material.units}</p>
+                </div>
+                <p class="material-description-2", id="material-description">${material.description}. ${appended_description}</p>
+                <p class="material-name", id="material-name">${material.name}</p>
+            </div>        
+            <div>
+                
+            </div>
+        </li>        
+         `
+         $("#material-item-list").prepend(row)
+         $(`#material-item-${id}`).hide().slideDown(250)
+         kit_price=kit_price+parseInt(total_price)
+    }
+
+
+    function add_wood(id,quantity,wood_length,appended_description){
+        if (isNaN(appended_description)==true){appended_description=''}
+        let material={
+        img_src: $('#'+id).children().filter('#img_src').text(),
+        name: $('#'+id).children().filter('#name').text(),
+        description: $('#'+id).children().filter('#description').text(),
+        price: $('#'+id).children().filter('#price').text(),
+        units: $('#'+id).children().filter('#units').text()
+        };
+        let total_price=material.price*quantity*wood_length
+        total_price=total_price.toFixed(2);
+        let row=`
+        <li id="material-item-${id}", class="material-item Collection-Item-3">
+            <div class="material-thumbnail-div">
+                <img src="${material.img_src}", alt="${material.name}"/>
+            </div>
+            <div class='material-text-div', visibility="hidden">
+                <div class="list-item-price-div"
+                    <p id="quantity", class="material-amount">${quantity}</p>
+                    <p class="material-amount">&nbsp</p>
+                    <p id="material-units", class="material-amount">${material.units}</p>
+                    <p class="material-amount">,&nbsp</p>
+                    <p id="material-total-price", class="material-total-price">${total_price}</p>
+                    <p class="material-total-price">₪</p>
+                </div>
+                <div class="list-item-price-div">
+                    <p id="material-price", class="material-price">${material.price}</p>
+                    <p class="material-price">₪&nbsp</p>
+                    <p class="material-price">למטר</p>
+                </div>
+                <p class="material-description-2", id="material-description">${material.description}. ${appended_description}</p>
+                <p class="material-name", id="material-name">${material.name} באורך ${Math.round(wood_length*100*2)/2} ס"מ</p>
+            </div>        
+            <div>
+                
+            </div>
+        </li>        
+         `
+         $("#material-item-list").prepend(row)
+         $(`#material-item-${id}`).hide().slideDown(250)
+         kit_price=kit_price+parseInt(total_price)
+    }
+
+
+    });
+    </script>
+</head>
+
+<body>
+<form class =  "calculator-form-div">
+    אורך חיצוני <br/>
+        <div class = "calculatoe-error-message" id = "length_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "length" placeholder= "בסנטימטרים"><br/>
+    גובה כולל <br/>
+        <div class = "calculatoe-error-message" id = "heigt_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "height" placeholder= "בסנטימטרים"><br/>
+    עץ מחוטא
+    <input type = "radio" id = "treated" name="yesno"/><br/>
+    עץ לא מחוטא
+    <input type = "radio" id = "untreated" name="yesno" checked/>
+    <br/>
+    <button id='calculate' class = "calculator-calculate-button" type = "button">חשב</button> <br/><br/>
+    מחיר הקיט:
+        <h3 class = "kit-price" id = "price"></h3><br/>
+        <div id = "BOM"></div> <br/><br/>
+    <p id="thulat_hakit"></p>
+</form>
+</body>

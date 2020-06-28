@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function calc(){
+          let wv = parseInt(document.querySelector("#water_volume").value); //בודק את המשתנים שהוזנו בטופס
+          let wrec = parseInt(document.querySelector("#water_EC").value);
+          let crec = parseInt(document.querySelector("#current_EC").value);
+          let frz = document.querySelector("#fertilizer").value;
+          let swp = document.querySelector("#summer_or_winter_plants").value;
+          let calculate;
+          let wanted_EC = 0;
+
+            if (isNaN(wrec) == true){ //בודק אם הוזן איסי מים
+                wrec = 600;
+                document.querySelector("#no_water_ec").innerHTML = "EC מים = " + wrec + "µS כברירת מחדל";
+            } else {
+                document.querySelector("#no_water_ec").innerHTML = "";
+            }
+
+            if (isNaN(crec) == true){//בודק אם הוזן איסי נוכחי
+                crec = wrec;
+                document.querySelector("#no_current_ec").innerHTML = "EC נוכחי = EC מים כברירת מחדל";
+            } else {
+                document.querySelector("#no_current_ec").innerHTML = "";
+            }
+            switch (frz) {//בודק את הדשן שהוזן
+                case "LivinGreen_fertilizer":
+                frz_value = 0.0000025; //concentration that equals 1 uS
+                break;
+		            case "Zalmanson_fertilizer":
+                frz_value = 0.00000238; //concentration that equals 1 uS
+                break;
+            }
+
+            switch (swp) {//בודק את סוג הגידול שהוזן
+            case "summer_plants":
+                    swp_value = 2250 + wrec; //wanted WITH water
+                    wanted_EC = (swp_value + 150) + "µS" + " - " + (swp_value - 150) + "µS"
+                break;
+            case "winter_plants":
+                    swp_value = 1450 + wrec; //wanted value WITH water
+                    wanted_EC = (swp_value + 250) + "µS" + " - " + (swp_value - 250) + "µS"
+                break;
+            case "summer_and_winter_plants":
+                    swp_value = 1800 + wrec; //wanted value WITH water
+                    wanted_EC = (swp_value + 200) + "µS" + " - " + (swp_value - 200) + "µS"
+                break;
+            case "Seedlings":
+                swp_value = 1200 + wrec; //wanted value WITH water
+                wanted_EC = (swp_value + 200) + "µS" + " - " + (swp_value - 200) + "µS"
+            break;
+}
+
+document.querySelector("#wanted_EC").innerHTML = wanted_EC; //מציג את האיסי הרצוי למשתמש
+
+calculate = Math.round(1000 * (swp_value - crec) * wv * frz_value);//מחשב את הכמות דשן הרצויה
+
+if (isNaN(calculate) == true) {//בודק אם יצא תוצאה הגיונית
+document.querySelector("#result").innerHTML = "לא הוכנס מספר";
+}
+else if (calculate < 0){
+    document.querySelector("#result").innerHTML = "EC נוכחי גבוהה מדי, יש לרוקן חלק מהמים ולמלא מחדש";
+}
+else{
+document.querySelector("#result").innerHTML = calculate + " מיליליטר דשן";
+}
+}
+
+    </script>
+
+</head>
+
+<body>
+
+    <form class =  "calculator-form-div">
+         נפח מאגר המים (ליטרים) <input class = "calculator-text-input" type = "text" id = "water_volume"><br/>
+         EC מי ברז <input class = "calculator-text-input" type = "text" id = "water_EC"><br/>
+              <div class = "calculatoe-error-message" id = "no_water_ec"></div><br/>
+        EC נוכחי במאגר המים <input class = "calculator-text-input" type = "text" id = "current_EC"><br/>
+              <div class = "calculatoe-error-message" id = "no_current_ec"></div><br/>
+         איזה דשן? <br/>                  <!--דרופדאון מניו לדשנים-->
+            <select class = "calculator-dropdown-field" id = "fertilizer">
+                <option class = "calculator-text-input" value = "LivinGreen_fertilizer">LivinGreen - Supreme Lion</option>
+                <option class = "calculator-text-input" value = "Zalmanson_fertilizer">זלמנסון דשנים - BOUNTY 1</option>
+            </select> <br/>
+          מה מגדלים?<br/>       <!--דרופדאון מניו לסוג הגידול-->
+                <select class = "calculator-dropdown-field" id = "summer_or_winter_plants"> 
+                    <option class = "calculator-text-input" value = "summer_plants">פירותיים (גידולי קיץ)</option>
+                    <option class = "calculator-text-input" value = "winter_plants">עלים (גידולי חורף)</option>
+                    <option class = "calculator-text-input" value = "summer_and_winter_plants">גם קיץ וגם חורף</option>
+                    <option class = "calculator-text-input" value = "Seedlings">שתילים צעירים</option>
+                </select> <br/>
+          <button class = "calculator-calculate-button" type = "button" onclick = "calc()">חשב</button> <br/>
+          <div class = "calculatoe-error-message" ></div>EC רצוי כולל מים: <br/>
+          <div class = "calculator-result" id = "wanted_EC"></div><br/>
+          <p>יש להוסיף:</p> <br/>
+          <div class = "calculator-result" id = "result"></div>
+    </form>
+</body>
+</html>

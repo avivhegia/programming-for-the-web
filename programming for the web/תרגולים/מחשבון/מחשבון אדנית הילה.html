@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+      
+        function zero_it(whatever){
+            if (isNaN(whatever)==true){
+                return 0;
+            } else{
+                return whatever;
+            }
+        }
+
+        function calc(){
+          let total_length = parseInt(document.querySelector("#total_length").value); //בודק את המשתנים שהוזנו בטופס
+          let total_height = parseInt(document.querySelector("#total_height").value);
+          let long_wood;
+          let volume;
+          let no_of_sacks;
+          let price=0;
+          let tarp_length;
+
+          if (total_height>60){ //בודק את הגובה
+                document.querySelector("#height_over_60").innerHTML = "האדנית גבוהה מדי ולא יציבה";
+            } else {
+                document.querySelector("#height_over_60").innerHTML = "";
+            }
+
+            if (total_length>150){ //בודק את הגובה
+                document.querySelector("#length_over_150").innerHTML = "האדנית ארוכה מדי";
+            } else {
+                document.querySelector("#length_over_150").innerHTML = "";
+            }
+
+        long_wood=total_length-2*3.2//פחות רוחב הרגליים
+        volume=Math.round((total_length-2*2*3.2)*28*22.6/(10**3)) /*אורך כולל פחות עובי הקורות ועובי הרגליים, כפול הרוחב כפול הגובה, ואז מעבר לליטרים*/
+        no_of_sacks=Math.ceil(volume/50);
+        tarp_length=long_wood+28+28+20
+
+        price=4*total_height*9/100//רגליים
+        price=price+6*long_wood*14/100//קורות אורך
+        price=price+no_of_sacks*45//שקי אדמה
+        price=price+10//יריעת ניילון. לא כולל אביזרי השקייה או הומוס תולעים או שתילים
+        price=price*1.2//כדי שארוויח משהו
+        price=Math.round(price)
+
+        tarp_length=zero_it(long_wood)
+        long_wood=zero_it(long_wood)
+        volume=zero_it(volume)
+        no_of_sacks=zero_it(no_of_sacks)
+        total_height=zero_it(total_height)
+        price = zero_it(price)
+
+        document.querySelector("#price").innerHTML = price+' ש"ח';
+        document.querySelector("#BOM").innerHTML = 'נפח האדנית: '+volume+' ליטר'+"<br/>"
+        +'המחיר כולל:'+"<br/>"
+        +'6 יחידות - קורת עץ 3 על 15 ס"מ, אורך '+long_wood+' ס"מ '+"<br/>"
+        +'4 יחידות - קורת עץ 3.5 על 7 ס"מ, אורך '+total_height+' ס"מ'+"<br/>"
+        +no_of_sacks+' יחידות - שק אדמת שתילה 50 ליטר '+"<br/>"
+        +"1 יחידה - יריעת ניילון במידות "+(tarp_length)+ " על " + (28+28+22.5+20) + ' ס"מ'+"<br/>"
+        +"40-60 ברגי סיבית לפי הצורך"+"<br/>"
+        +"לא כולל הומוס ואביזרי השקייה"+"<br/>"
+
+    }
+    </script>
+
+</head>
+
+<body>
+
+    <form class =  "calculator-form-div">
+        אורך חיצוני <br/>
+            <input class = "calculator-text-input" type = "text" id = "total_length" placeholder= "בסנטימטרים"><br/>
+            <div class = "calculatoe-error-message" id = "length_over_150"></div>
+        גובה כולל <br/>
+            <div class = "calculatoe-error-message" id = "height_over_60"></div>
+            <input class = "calculator-text-input" type = "text" id = "total_height" placeholder= "בסנטימטרים"><br/>
+            <button class = "calculator-calculate-button" type = "button" onclick = "calc()">חשב</button> <br/>
+        מחיר:
+          <h3 class = "1.1-like-heading" id = "price"></h3><br/>
+          <div id = "BOM"></div> <br/>
+    </form>
+</body>
+</html>

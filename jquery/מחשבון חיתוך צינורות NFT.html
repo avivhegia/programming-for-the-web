@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('#calculate').click(calculate);
+       function calculate(){    
+
+        let wanted_pipe_length=($('#wanted_pipe_length').val());
+        let raw_pipe_length
+        let first_hole_spacing=0
+        let hole_spacing
+        let length_to_cut
+        let no_of_holes=0
+        let BOM=''
+
+            if (wanted_pipe_length<=130){
+                first_hole_spacing=15.5
+                hole_spacing=19.8
+                raw_pipe_length=130
+                }
+             else if (wanted_pipe_length>130 && wanted_pipe_length<=240){
+                first_hole_spacing=20
+                hole_spacing=20
+                raw_pipe_length=240
+                }
+             else if (wanted_pipe_length>240 && wanted_pipe_length<=400){
+                first_hole_spacing=21.75
+                hole_spacing=20
+                raw_pipe_length=400
+                }
+
+                if ($('#with_holes').is(':checked')) {
+        length_to_cut=first_hole_spacing+13
+
+        while (length_to_cut<wanted_pipe_length) {
+            length_to_cut=length_to_cut+hole_spacing
+            no_of_holes=no_of_holes+1
+        }
+
+        length_to_cut=Math.round(2*(length_to_cut-hole_spacing))/2
+        }
+        else{
+        length_to_cut=parseInt(wanted_pipe_length)
+        }
+
+        if (isNaN(($('#wanted_pipe_length').val()))==true||(wanted_pipe_length==0)) {
+        $('#length_err').text("נא להזין נתונים")
+        $('#BOM').text('');
+        }
+        else if (wanted_pipe_length>400) {
+        $('#length_err').text('אורך צינור מקסימלי: 400 ס"מ')
+        $('#BOM').text('');
+        }
+        else{
+        $('#length_err').text('')
+        $('#BOM').text('');
+        let BOM=`
+        <p> יש לחתוך את הצינור לאורך ${length_to_cut} ס"מ</p>
+        <p>אורך הצינור כולל זוג זוויות: ${length_to_cut+30}</p>
+        <p>אורך חיצוני עם מאגר פלסטיק 60 ליטר: ${length_to_cut+30+15} ס"מ</p>
+        <p>אורך צינור גולמי: ${raw_pipe_length} ס"מ</p>
+        <p>כמות חורי שתילה: ${no_of_holes} חורים</p>
+        `
+        $('#BOM').prepend(BOM)
+        }
+    }
+    });
+    </script>
+</head>
+
+<body>
+<form class =  "calculator-form-div">
+    הצינור נחתך כשהוא כבר קדוח עם חורי שתילה
+    <input type = "radio" id = "with_holes" name="yesno" checked/><br/>
+    הצינור ללא חורים
+    <input type = "radio" id = "blank" name="yesno"/>
+    <button id='calculate' class = "calculator-calculate-button" type = "button">חשב</button> <br/><br/>
+    אורך צינור רצוי <br/>
+        <div class = "calculatoe-error-message" id = "length_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "wanted_pipe_length" placeholder= "בסנטימטרים"><br/>
+        <h3 class = "kit-price" id = "price"></h3><br/>
+        <div id = "BOM"></div> <br/><br/>
+</form>
+</body>

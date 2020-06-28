@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+
+        function zero_it(whatever){
+            if (isNaN(whatever)==true){
+                return 0;
+            } else{
+                return whatever;
+            }
+        }
+
+function calc(){
+    let hg = parseInt(document.querySelector("#horizontal_gap").value);
+    let rh = parseInt(document.querySelector("#reservoir_height").value);
+    let nl = parseInt(document.querySelector("#nipple_length").value);
+    let alpha = parseInt(document.querySelector("#angle_to_sun").value);
+    let ws = document.querySelector("#wanted_slope").value;
+    let pipe_diameter_value = document.querySelector("#pipe_diameter").value;
+    let ws_value;
+    let right_culumn_abc = [];
+    let left_culumn_a1b1c1 = [];
+    let bg_big_gap;
+    let sg_small_gap;
+    let nipple_overlap;
+
+    if (isNaN(hg) == true){ //בודק אם הוזן מרווח אופקי
+        document.querySelector("#no_horizontal_gap").innerHTML = "לא הוזן מרווח אופקי";
+    } else {
+        document.querySelector("#no_horizontal_gap").innerHTML = "";
+    }
+
+    if (isNaN(rh) == true){//בודק אם הוזן גובה מאגר
+        rh = 45;
+        document.querySelector("#no_reservoir_height").innerHTML = "גובה מאגר = 45 סנטימטר כברירת מחדל";
+    } else {
+        document.querySelector("#no_reservoir_height").innerHTML = "";
+    }
+
+    switch (ws) {//בודק את השיפוע שהוזן
+        case "0%_slope":
+            ws_value = 0;
+        break;
+        case "1%_slope":
+            ws_value = 0.01;
+        break;
+        case "2%_slope":
+            ws_value = 0.02;
+        break;
+        case "3%_slope":
+            ws_value = 0.03;
+        break;
+        case "4%_slope":
+            ws_value = 0.04;
+            break;
+    }
+
+    switch (pipe_diameter_value) {//בודק את קוטר הצינור שהוזן
+        case "75mm":
+            pipe_diameter_value = 7.5;
+            nipple_overlap = 4.2 * 2;
+            sg_small_gap = 16; //between pipe centers
+            break;
+        case "110mm":
+            pipe_diameter_value = 11;
+            nipple_overlap = 6.2 * 2;
+            sg_small_gap = 20;
+            break;
+        case "160mm":
+            pipe_diameter_value = 16;
+            nipple_overlap = 9.4 * 2;
+            sg_small_gap = 41.2;
+            break;
+    }
+
+    if (isNaN(nl) == false){                //בודק אם יש אורך ניפל sg_small_gap
+        if (nl < nipple_overlap){              // מוודא שאורך הניפל תקין וארוך מהאוברלאפ שלו
+            document.querySelector("#nipple_length_message").innerHTML = "אורך הניפל שהוזן קצר מדי";
+        }
+        else{
+            sg_small_gap = sg_small_gap + nl - nipple_overlap;
+            document.querySelector("#nipple_length_message").innerHTML = "";
+        }
+    }
+    else {
+            nl = 0;
+        }
+
+    bg_big_gap =Math.round((sg_small_gap + hg * ws_value * 2)*10)/10; //between centers  
+    average_gap = Math.round((hg * ws_value + sg_small_gap)*10)/10;
+
+    for (let i = 0; i < 8; i++) {
+        if (i % 2 == 0){
+            right_culumn_abc [i] = average_gap * i - hg * ws_value / 2; 
+        }
+        else {
+            right_culumn_abc [i] = average_gap * i + hg * ws_value / 2; 
+        }
+    }
+
+    for (let i = 0; i < 8; i++) {
+        if (i % 2 == 0){
+            left_culumn_a1b1c1 [i] = average_gap * i + hg * ws_value / 2; 
+        }
+        else {
+            left_culumn_a1b1c1 [i] = average_gap * i - hg * ws_value / 2; 
+        }
+    }
+
+    function degrees_to_radians(degrees){
+var pi = Math.PI;
+return degrees * (pi/180);
+}
+
+function add_rh(item, index, arr) {
+    arr[index] = Math.round(10*(item + rh + hg * ws_value / 2 + 5 + pipe_diameter_value / 2))/10;
+    }
+
+function add_cos(item,index,arr){
+        arr[index]=Math.round(10*item/Math.cos(degrees_to_radians(alpha)))/10
+    }
+
+    left_culumn_a1b1c1.forEach(add_rh)
+    right_culumn_abc.forEach(add_rh)
+
+if (isNaN(alpha)==false){
+    left_culumn_a1b1c1.forEach(add_cos)
+    right_culumn_abc.forEach(add_cos)
+    bg_big_gap=Math.round(10*bg_big_gap/Math.cos(degrees_to_radians(alpha)))/10
+    sg_small_gap=Math.round(10*sg_small_gap/Math.cos(degrees_to_radians(alpha)))/10
+    }
+    
+document.querySelector("#a").innerHTML = right_culumn_abc [0];
+document.querySelector("#b").innerHTML = right_culumn_abc [1];
+document.querySelector("#c").innerHTML = right_culumn_abc [2];
+document.querySelector("#d").innerHTML = right_culumn_abc [3];
+document.querySelector("#e").innerHTML = right_culumn_abc [4];
+document.querySelector("#f").innerHTML = right_culumn_abc [5];
+document.querySelector("#g").innerHTML = right_culumn_abc [6];
+
+document.querySelector("#a1").innerHTML = left_culumn_a1b1c1 [0];
+document.querySelector("#b1").innerHTML = left_culumn_a1b1c1 [1];
+document.querySelector("#c1").innerHTML = left_culumn_a1b1c1 [2];
+document.querySelector("#d1").innerHTML = left_culumn_a1b1c1 [3];
+document.querySelector("#e1").innerHTML = left_culumn_a1b1c1 [4];
+document.querySelector("#f1").innerHTML = left_culumn_a1b1c1 [5];
+document.querySelector("#g1").innerHTML = left_culumn_a1b1c1 [6];
+
+document.querySelector("#long_distance_between_pipes").innerHTML=bg_big_gap+' ס"מ ';
+document.querySelector("#short_distance_between_pipes").innerHTML=sg_small_gap+' ס"מ ';
+
+}
+
+function nipple_or_not(){
+    if (document.getElementById('yes_nipple').checked) {
+        document.getElementById('if_yes_nipple').style.display = 'block';
+    }
+    else document.getElementById('if_yes_nipple').style.display = 'none';
+
+}
+    </script>
+
+</head>
+
+<body>
+
+    <form class =  "calculator-form-div">
+        קוטר הצינור <br/>
+        <select class = "calculator-dropdown-field" id = "pipe_diameter" >
+            <option class = "calculator-text-input" value = "75mm">75 מילימטר</option>
+            <option selected = "selected" class = "calculator-text-input" value = "110mm">110 מילימטר</option>
+            <option class = "calculator-text-input" value = "160mm">160 מילימטר</option>
+        </select> <br/>
+        מרחק אופקי בין 2 נקודות האחיזה
+            <div class = "calculatoe-error-message" id = "no_horizontal_gap"></div><br/>
+        <input class = "calculator-text-input" type = "text" id = "horizontal_gap" placeholder= "בסנטימטרים"><br/>
+        גובה מאגר המים
+            <div class = "calculatoe-error-message" id = "no_reservoir_height"></div><br/>
+        <input class = "calculator-text-input" type = "text" id = "reservoir_height" placeholder= "בסנטימטרים"/><br/> 
+        שיפוע רצוי <br/>
+        <select class = "calculator-dropdown-field" id = "wanted_slope" placeholder= "באחוזים %">
+            <option class = "calculator-text-input" value = "0%_slope">0%</option>
+            <option class = "calculator-text-input" value = "1%_slope">1%</option>
+            <option selected = "selected" class = "calculator-text-input" value = "2%_slope">2%</option>
+            <option class = "calculator-text-input" value = "3%_slope">3%</option>
+            <option class = "calculator-text-input" value = "4%_slope">4%</option>
+        </select> <br/>
+        זווית כלפי השמש <br/>
+        <input class = "calculator-text-input" type = "text" id = "angle_to_sun" placeholder= "במעלות"/><br/> 
+        עם ניפל
+        <input type = "radio" onclick = "javascript:nipple_or_not();" name = "yesno" id = "yes_nipple"/><br/>
+        <div id = "if_yes_nipple" style = "display:none">
+            מה האורך הכולל של הניפל? <br/>
+            <div class = "calculatoe-error-message" id = "nipple_length_message"></div><br/><!--nipple too short-->
+            <input type='text' id='nipple_length' name='yes'/><br>
+            </div> <br/>
+        בלי ניפל 
+        <input type = "radio" onclick = "javascript:nipple_or_not();" name="yesno" id = "no_nipple"/>
+          <button class = "calculator-calculate-button" type = "button" onclick = "calc()">חשב</button> <br/>
+          מידה א':
+          <div class = "calculator-result" id = "long_distance_between_pipes"></div> <br/>
+          מידה ב':
+          <div class = "calculator-result" id = "short_distance_between_pipes"></div> <br/>
+          <p>המידות מהקרקע הן:</p> <br/>
+          <table class = "calculator-result" style="width:100%" border = "1px solid black"
+          border-collapse = "collapse">
+            <tr>
+              <th> מידה </th>
+              <th> ערך </th>
+              <th> מידה </th>
+              <th> ערך </th>
+            </tr>
+            <tr>
+              <td>a</td>
+              <td id = "a"></td>
+              <td>'a</td>
+              <td id = "a1"></td>
+            </tr>
+            
+            <tr>
+                <td>b</td>
+                <td id = "b"></td>
+                <td>'b</td>
+                <td id = "b1"></td>
+            </tr>
+
+            <tr>
+                <td>c</td>
+                <td id = "c"></td>
+                <td>'c</td>
+                <td id = "c1"></td>
+            </tr>
+            
+            <tr>
+                <td>d</td>
+                <td id = "d"></td>
+                <td>'d</td>
+                <td id = "d1"></td>
+            </tr>
+
+            <tr>
+                <td>e</td>
+                <td id = "e"></td>
+                <td>'e</td>
+                <td id = "e1"></td>
+            </tr>
+
+            <tr>
+                <td>f</td>
+                <td id = "f"></td>
+                <td>'f</td>
+                <td id = "f1"></td>
+            </tr>
+
+            <tr>
+                <td>g</td>
+                <td id = "g"></td>
+                <td>'g</td>
+                <td id = "g1"></td>
+            </tr>
+          </table>
+    </form>
+</body>
+</html>

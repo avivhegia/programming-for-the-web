@@ -1,0 +1,178 @@
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <script> 
+    function nonan(number){
+        if (isNaN(number)==true)
+        return 0
+        else 
+        return number
+    }
+
+    let total_price
+
+    $("#update-cart").click(function(){
+        total_price=0
+        $(".provider-list-items").each(function(){
+            $(this).text("")
+        })
+        $('#material-item-list').empty();
+
+        $(".hidden-div").each(function(){
+            let material={
+        name: $(this).find("*").filter("#name").text(),
+        description: $(this).find("*").filter("#description").text(),
+        img_src: $(this).find("*").filter("#img_src").text(),
+        price: parseFloat(Math.round(($(this).find("*").filter("#price").text())*($('#pricer'.find("*").filter("#price").text()))*100)/100),
+        provider: $(this).find("*").filter("#provider").text(),
+        units: $(this).find("*").filter("#units").text(),
+        quantity: parseFloat($(this).parent().find("*").filter("#quantity").val()),
+        length: parseFloat($(this).parent().find("*").filter("#wood-length").val()),
+        custum_name:$(this).parent().find("*").filter("#custum-name").val(),
+        custum_price: parseInt($(this).parent().find("*").filter("#custom-item-price").val()),
+        class: $(this).children().children().attr('class'),
+        };
+        material.price=nonan(material.price)
+        material.quantity=nonan(material.quantity)
+        material.length=nonan(material.length)
+        material.custum_price=nonan(material.custum_price)
+        let row=""
+
+        if (material.quantity>0){
+        if (material.class=="material"){
+            total_price+=material.price*material.quantity
+            $("#"+material.provider).text($("#"+material.provider).text()+`
+        <tr dir="rtl">
+            <td dir="rtl"><img width="100" height="100" src="${material.img_src}", alt="${material.name}"/></td>
+            <td dir="rtl"> | ${material.name}  </p></td>
+            <td dir="rtl"> | ${material.quantity} ${material.units}  </p></td>
+            <td dir="rtl"> | ${material.description}  </p></td>
+        </tr>
+        `)
+        row=`
+        <li id="material-item-${material.name}", class="material-item Collection-Item-3">
+            <div class="material-thumbnail-div">
+                <img src="${material.img_src}", alt="${material.name}"/>
+            </div>
+            <div class='material-text-div', visibility="hidden">
+                <div class="list-item-price-div"
+                    <p id="quantity", class="material-amount">${material.quantity}</p>
+                    <p class="material-amount">&nbsp</p>
+                    <p id="material-units", class="material-amount">${material.units}</p>
+                    <p class="material-amount">,&nbsp</p>
+                    <p id="material-total-price", class="material-total-price">${Math.round(100*material.price*material.quantity)/100}</p>
+                    <p class="material-total-price">₪</p>
+                </div>
+                <div class="list-item-price-div">
+                    <p id="material-price", class="material-price">${material.price}</p>
+                    <p class="material-price">₪&nbspל</p>
+                    <p class="material-price">${material.units}</p>
+                </div>
+                <p class="material-description-2", id="material-description">${material.description}</p>
+                <p class="material-name", id="material-name">${material.name}</p>
+            </div>        
+            <div>
+                
+            </div>
+        </li>        
+         `
+        }
+        else if (material.class=="wood"){
+            total_price+=material.price*material.quantity*material.length/100
+            $("#"+material.provider).text($("#"+material.provider).text()+`
+        <tr dir="rtl">
+            <td dir="rtl"><img width="100" height="100" src="${material.img_src}", alt="${material.name}"/></td>
+            <td dir="rtl"> | ${material.name} באורך ${material.length} ס"מ  </p></td>
+            <td dir="rtl"> | ${material.quantity} ${material.units}  </p></td>
+            <td dir="rtl"> | ${material.description}  </p></td>
+        </tr>
+        `)
+        row=`
+        <li id="material-item-${material.name}", class="material-item Collection-Item-3">
+            <div class="material-thumbnail-div">
+                <img src="${material.img_src}", alt="${material.name}"/>
+            </div>
+            <div class='material-text-div', visibility="hidden">
+                <div class="list-item-price-div"
+                    <p id="quantity", class="material-amount">${material.quantity}</p>
+                    <p class="material-amount">&nbsp</p>
+                    <p id="material-units", class="material-amount">${material.units}</p>
+                    <p class="material-amount">,&nbsp</p>
+                    <p id="material-total-price", class="material-total-price">${total_price}</p>
+                    <p class="material-total-price">₪</p>
+                </div>
+                <div class="list-item-price-div">
+                    <p id="material-price", class="material-price">${material.price}</p>
+                    <p class="material-price">₪&nbsp</p>
+                    <p class="material-price">למטר</p>
+                </div>
+                <p class="material-description-2", id="material-description">${material.description}</p>
+                <p class="material-name", id="material-name">${material.name} באורך ${material.length} ס"מ</p>
+            </div>         
+            <div>
+                
+            </div>
+        </li>        
+         `
+        }
+        else if (material.class=="custum-material"){
+            total_price+=material.custum_price*material.quantity
+            $("#other").text($("#other").text()+`
+        <tr dir="rtl">
+            <td dir="rtl"><img width="100" height="100" src="https://uploads-ssl.webflow.com/5cf7b7c97a78cd46b58a0bbb/5e8ce50d3528a032c0f0e70f_חץ פתיחה סגירה קטן.png", alt="${material.custum_name}"/></td>
+            <td dir="rtl"> | ${material.custum_name}  </p></td>
+            <td dir="rtl"> | ${material.quantity} יח'  </p></td>
+            <td dir="rtl"> | ${material.description}  </p></td>
+        </tr>
+        `)
+        row=`
+        <li id="material-item-${material.custum_name}", class="material-item Collection-Item-3">
+            <div class="material-thumbnail-div">
+                <img src="https://uploads-ssl.webflow.com/5cf7b7c97a78cd46b58a0bbb/5e8ce50d3528a032c0f0e70f_חץ פתיחה סגירה קטן.png", alt="${material.custum_name}"/>
+            </div>
+            <div class='material-text-div', visibility="hidden">
+                <div class="list-item-price-div"
+                    <p id="quantity", class="material-amount">${material.quantity}</p>
+                    <p class="material-amount">&nbsp</p>
+                    <p id="material-units", class="material-amount">יח'</p>
+                    <p class="material-amount">,&nbsp</p>
+                    <p id="material-total-price", class="material-total-price">${Math.round(100*material.custum_price*material.quantity)/100}</p>
+                    <p class="material-total-price">₪</p>
+                </div>
+                <div class="list-item-price-div">
+                    <p id="material-price", class="material-price">${material.custum_price}</p>
+                    <p class="material-price">₪&nbspל</p>
+                    <p class="material-price">יח'</p>
+                </div>
+                <p class="material-description-2", id="material-description">פריט בהתאמה אישית</p>
+                <p class="material-name", id="material-name">${material.custum_name}</p>
+            </div>        
+            <div>
+            </div>
+        </li>        
+         `
+        }
+        $("#material-item-list").append(row) 
+        }
+        })
+        $('#total-price').text('');
+        total_price=Math.round(total_price*100)/100;
+        total_price=Intl.NumberFormat('he-IR', { style: 'currency', currency: 'ILS' }).format(total_price);
+        $('#total-price').text(total_price);
+        console.log("price:" +total_price)
+});
+   
+$("#add-row").click(function(){
+  $("#custum-list-item").clone().appendTo("#custum-list")
+});
+
+$("#subtract-row").click(function(){
+    if ($("#custum-list").children().length>1){
+        $("#custum-list").children().last().remove();
+    }
+});
+
+$(".add-wood-row").click(function(){
+  $(this).parent().parent().clone().insertAfter($(this).parent().parent())
+});
+
+    </script>

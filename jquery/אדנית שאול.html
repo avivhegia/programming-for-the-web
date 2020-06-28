@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+
+
+<head>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        let kit_price=0;
+        let wood_cuts=0;
+        let surface_area=0;
+    $(document).ready(function() {
+        $('#calculate').click(calculate);
+
+       function calculate(){   
+
+       let length=parseInt($('#length').val());
+       let width=parseInt($('#width').val());
+       let height=parseInt($('#height').val());
+       if (height>250) {$('#heigt_err').text(".לא קצת הגזמנו עם גובה ההדליה? \n")}
+       else if (height<100){$('#heigt_err').text('.קיט ללא מוטות הדלייה\n')}
+       else {$('#heigt_err').text("")}
+       if (length>400) {$('#length_err').append('\n אורך אדנית מקסימלי: 400 ס"מ')}
+       else{$('#length_err').text("")}
+       if (width>120) {$('#width_err').append('\n רוחב אדנית מקסימלי: 120 ס"מ')}
+       else{$('#width_err').text("")}
+       kit_price=0;
+       wood_cuts=0;
+        surface_area=0;
+       let volume=Math.round((length/100)*(width/100)*0.3*1000)
+
+        $('#material-item-list').empty();
+       clean_text_area()
+
+        if ($('#treated').is(':checked')) {
+            add_wood('3x15-treated-wood',4,(length-6.4))
+            add_wood('3x15-treated-wood',4,(width))
+            add_wood('3-5x7-5-treated-wood',2,(length-6.4))
+            add_wood('5x5-treated-wood',2,height/100)
+        }else {
+            add_wood('3x15-untreated-wood',4,(length-6.4))
+            add_wood('3x15-untreated-wood',4,(width))
+            add_wood('3-5x7-5-untreated-wood',2,(length-6.4))
+            add_wood('5x5-untreated-wood',2,height)
+            }
+            add_material('wood-cut',wood_cuts)
+            if ($('#need_potting_soil').is(':checked')) {
+            add_material('50l-peat-potting-sack',Math.ceil(volume/50))
+             }
+            if (length<120){
+                add_material('nylon-tarp',Math.round((width+80)*10/100)/10)    
+            }else{
+                add_material('nylon-tarp',(length+80)/100)
+            }
+            add_material('5x70-wood-screw',50)
+            
+        $('#price').text('');
+        kit_price=Math.round(kit_price*100)/100;
+        kit_price=Intl.NumberFormat('he-IR', { style: 'currency', currency: 'ILS' }).format(kit_price);
+        $('#price').text(kit_price);
+
+        $('#BOM').text('');
+        let BOM=`
+        <p> נפח האדנית: ${volume} ליטר</p>
+        <p>רוחב האדנית: ${width} ס"מ</p>
+        <p>אורך האדנית: ${length} ס"מ</p>
+        <p>סה"כ פני שטח עץ לצביעה: ${surface_area} מ"ר</p>
+        `
+        $('#BOM').prepend(BOM)
+
+        if (isNaN(length)==true||isNaN(height)==true ||isNaN(width)==true){
+            $("#material-item-list").empty()
+            $('#price').text('נא להזין נתונים')
+        }else{
+            $('#thulat_hakit').text('תכולת הקיט:')
+        }
+    }
+    });
+    </script>
+</head>
+
+<body>
+<form class =  "calculator-form-div">
+    אורך חיצוני <br/>
+        <div class = "calculatoe-error-message" id = "length_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "length" placeholder= "בסנטימטרים"><br/>
+    רוחב חיצוני <br/>
+        <div class = "calculatoe-error-message" id = "width_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "width" placeholder= "בסנטימטרים"><br/>
+    גובה כולל <br/>
+        <div class = "calculatoe-error-message" id = "heigt_err"></div>
+        <input class = "calculator-text-input" type = "text" id = "height" placeholder= "בסנטימטרים"><br/>
+    עץ מחוטא
+    <input type = "radio" id = "treated" name="yesno"/><br/>
+    עץ לא מחוטא
+    <input type = "radio" id = "untreated" name="yesno" checked/>
+    <br/><br/>
+    אני צריך/ה אדמת שתילה
+    <input type = "radio" id = "need_potting_soil" name="potting_soil"/><br/>
+    יש לי אדמה
+    <input type = "radio" id = "have_potting_soil" name="potting_soil" checked/>
+    <br/>
+    <button id='calculate' class = "calculator-calculate-button" type = "button">חשב</button> <br/><br/>
+    מחיר הקיט:
+        <h3 class = "kit-price" id = "price"></h3><br/>
+        <div id = "BOM"></div> <br/><br/>
+    <p id="thulat_hakit"></p>
+</form>
+</body>

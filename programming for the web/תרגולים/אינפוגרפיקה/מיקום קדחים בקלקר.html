@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback();
+
+    function zero_it(whatever){
+            if (isNaN(whatever)==true){
+                return 0;
+            } else{
+                return whatever;
+            }
+        }
+
+    function calculate_hole_position(){
+
+        let length=parseInt(document.querySelector("#total_length").value);
+        let width=parseInt(document.querySelector("#total_width").value);
+        let wanted_spacing=parseInt(document.querySelector("#wanted_spacing").value);
+        let length_boundary
+        let width_boundary
+        wanted_spacing=zero_it(wanted_spacing)
+
+        let data = new google.visualization.DataTable();
+        let no_of_holes=0;
+        let x_spacing=0;
+        let y_spacing=0;
+        let no_of_rows=0;
+        let no_of_columns=0;
+
+        let lip=0;
+        let shifted_row=false;
+
+        if (wanted_spacing<10) {
+            document.querySelector("#min_spacing_is_10").innerHTML = 'מרווחים קטנים מדי';
+        }
+
+        else if (wanted_spacing>30) {
+            document.querySelector("#min_spacing_is_10").innerHTML = 'לא קצת הגזמת עם המרווחים בין הקדחים?';
+        }
+        else{
+            document.querySelector("#min_spacing_is_10").innerHTML = '';
+        }
+        if (wanted_spacing<15) {
+            lip=7.5;
+        } else{
+            lip=wanted_spacing/2
+        }
+       
+       length_boundary=length-2*lip;
+       width_boundary=width-2*lip;
+
+        no_of_columns=Math.ceil(length_boundary/wanted_spacing);
+        no_of_rows=Math.ceil(width_boundary/wanted_spacing)+1;
+
+        x_spacing=length_boundary/(no_of_columns-0.5);
+        y_spacing=width_boundary/(no_of_rows-1);
+
+        data.addColumn('number', 'X');
+        data.addColumn('number', 'X,Y');
+
+        console.log('X_spacing: '+x_spacing+ " y_spacing: "+y_spacing+" no_of_rows: "+no_of_rows+" no_pf_column: "+no_of_columns);
+
+        for(let j=0; j<no_of_rows; j++){
+           let y_coordinate=(j)*y_spacing+lip;
+           y_coordinate=Math.round(10*y_coordinate)/10
+
+            for (let i = 0; i < no_of_columns; i++){
+                let x_coordinate
+                if (shifted_row==true){
+                  x_coordinate=(i+0.5)*x_spacing+lip //0.5== with shift
+                } else{
+                  x_coordinate=i*x_spacing+lip //0== no shift
+                }
+                x_coordinate=Math.round(10*x_coordinate)/10
+                no_of_holes++;
+                data.addRows([
+            [x_coordinate, y_coordinate],
+            ]);   
+
+            }
+            
+            shifted_row=!(shifted_row);
+        }
+
+            let chart_width=length*10
+            let chart_height=width*10
+            var options = {
+        title: 'מיקומי קדחים',
+        hAxis: {title: 'אורך קלקר', maxValue: length, gridlines:{color: '#bfbfbf', minSpacing: x_spacing}, minorGridlines:{color:'#bfbfbf'}},
+        vAxis: {title: 'רוחב קלקר', maxValue: width, gridlines:{color: '#bfbfbf', minSpacing: y_spacing}, minorGridlines:{color:'#bfbfbf'}},
+        legend: 'none',
+        crosshair: { trigger: 'both' },
+        animation: {startup:'true', duration:'300'},
+        colors: ['#f79328']
+        };
+
+        length=zero_it(length)
+        width=zero_it(width)
+        no_of_rows=zero_it(no_of_rows)
+        no_of_columns=zero_it(no_of_columns)
+        x_spacing=zero_it(x_spacing)
+        y_spacing=zero_it(y_spacing)
+        lip=zero_it(lip)
+
+        document.querySelector("#results").innerHTML ="נתונים ומידות: "+"<br/>"+ no_of_holes+' חורי שתילה '+"<br/>"
+        +no_of_rows+" שורות במרווח " +Math.round(10*y_spacing)/10+' ס"מ אחת מהשנייה'+"<br/>"
+        +no_of_columns+" עמודות במרווח " +Math.round(10*x_spacing)/10+' ס"מ אחת מהשנייה'+"<br/>"
+        +'מרווח מהשפה: '+lip+' ס"מ '+"<br/>"
+
+        document.getElementById("styrofoam").style.width = (length*10)+"px";
+        document.getElementById("styrofoam").style.height = (width*10)+"px";
+        var chart = new google.visualization.ScatterChart(document.getElementById('styrofoam'));
+        chart.draw(data, options);
+
+    }
+    </script>
+
+  </head>
+  <body>
+    <form class =  "calculator-form-div">
+        אורך הקלקר <br/>
+            <input class = "calculator-text-input" type = "text" id = "total_length" placeholder= "בסנטימטרים"><br/>
+            <div class = "calculatoe-error-message" id = "length_over_150"></div>
+        רוחב הקלקר <br/>
+            <input class = "calculator-text-input" type = "text" id = "total_width" placeholder= "בסנטימטרים"><br/>
+        מרחק רצוי בין קדחים <br/>
+            <div class = "calculatoe-error-message" id = "min_spacing_is_10"></div>
+            <input class = "calculator-text-input" type = "text" id = "wanted_spacing" placeholder= "בסנטימטרים"><br/>
+            <button class = "calculator-calculate-button" type = "button" onclick = "calculate_hole_position()">חשב</button> <br/>
+    </form>
+    <div id="styrofoam" style="width: width; height: height;"></div>
+    <div class = "" id = "results"></div> <br/>
+  </body>
