@@ -1,5 +1,5 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script>
+
         function add_material(id,quantity,appended_description,appended_heading){
         if (!appended_description){appended_description=''}
         if (!appended_heading){appended_heading=''}
@@ -120,4 +120,3 @@ function clean_text_area(){
     $('#tools-not-required').text("")
     $('#other').text("")
 }
-</script>
