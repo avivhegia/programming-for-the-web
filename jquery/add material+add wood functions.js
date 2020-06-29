@@ -120,3 +120,4 @@ function clean_text_area(){
     $('#tools-not-required').text("")
     $('#other').text("")
 }
+//
